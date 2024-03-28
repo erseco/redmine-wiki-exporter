@@ -1,5 +1,5 @@
 {
-  "redmineUrl" : "",
+  "redmineUrl": "",
   "user": "",
   "password": "",
   "outputDir": "output/",
