@@ -16,6 +16,7 @@ class Redmine {
     this.user = config.user;
     this.password = config.password;
     this.extension = config.extension || 'md';
+    this.excludedProjects = config.excludedProjects || [];
   }
 
   newRequest(requestPath) {
@@ -149,6 +150,11 @@ redmine.getProjects(projects => {
   console.log(projects.length+' projects found.');
   projects.forEach(project => {
     redmine.getWikiPages(project, pages => {
+      if (redmine.excludedProjects.includes(project.identifier)) {
+        console.log(project.identifier+' project skipped.');
+        return;
+      }
+
       if (pages.length > 0) {
         console.log(pages.length+" wiki pages found for project "+project.identifier);
         pages.forEach(page => {
