@@ -19,7 +19,8 @@ Create a ```config.json``` file, containing the following properties:
 * ```user```: the username used to authenticate through the Redmine REST API ;
 * ```password```: the password used to authenticate through the Redmine REST API ;
 * ```output```: the path of the local folder that will be used to store the output files ;
-* ```insecure```: set this option to ```true``` to run the script in an insecure mode that will not try to validate the SSL certificate of the Redmine server.
+* ```insecure```: set this option to ```true``` to run the script in an insecure mode that will not try to validate the SSL certificate of the Redmine server ;
+* ```extension```: (default "md") extension of output files ("md" or "textile")
 
 Run the script:
 

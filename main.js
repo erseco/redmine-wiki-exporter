@@ -15,6 +15,7 @@ class Redmine {
     this.redmineUrl = redmineUrl;
     this.user = config.user;
     this.password = config.password;
+    this.extension = config.extension;
   }
 
   newRequest(requestPath) {
@@ -177,7 +178,7 @@ function readConfiguration() {
 function backupWikiPage(project, page) {
   const projectDir = outputDir+project.identifier
   initDirectory(projectDir);
-  fs.writeFileSync(projectDir+'/'+page.title+'.md', page.text);
+  fs.writeFileSync(projectDir+'/'+page.title+'.'+config.extension, page.text);
   if (page.attachments) {
     const attachmentDir = projectDir+'/attachments';
     initDirectory(attachmentDir);
