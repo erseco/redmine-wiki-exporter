@@ -15,7 +15,7 @@ class Redmine {
     this.redmineUrl = redmineUrl;
     this.user = config.user;
     this.password = config.password;
-    this.extension = config.extension;
+    this.extension = config.extension || 'md';
   }
 
   newRequest(requestPath) {
