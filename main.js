@@ -20,13 +20,18 @@ class Redmine {
     this.excludedProjects = config.excludedProjects || [];
   }
 
+  sanitizeFileName(name) {
+    return name.replace(/[<>:"/\\|?*]+/g, '_');
+  }
+
   generateStaticSite(project, page) {
+    const sanitizedTitle = this.sanitizeFileName(page.title);
     const projectDir = outputDir + project.identifier;
     const htmlDir = projectDir + '/html';
     initDirectory(htmlDir);
 
     const htmlContent = textile(page.text);
-    const htmlFilePath = `${htmlDir}/${page.title}.html`;
+    const htmlFilePath = `${htmlDir}/${sanitizedTitle}.html`;
 
     fs.writeFileSync(htmlFilePath, htmlContent);
     console.log(`Generated HTML for ${page.title} at ${htmlFilePath}`);
@@ -213,7 +218,8 @@ function readConfiguration() {
 function backupWikiPage(project, page) {
   const projectDir = outputDir+project.identifier
   initDirectory(projectDir);
-  fs.writeFileSync(projectDir+'/'+page.title+'.'+config.extension, page.text);
+  const sanitizedTitle = this.sanitizeFileName(page.title);
+  fs.writeFileSync(projectDir+'/'+sanitizedTitle+'.'+config.extension, page.text);
   if (page.attachments) {
     const attachmentDir = projectDir+'/attachments';
     initDirectory(attachmentDir);
