@@ -215,19 +215,23 @@ function readConfiguration() {
   return config;
 }
 
-backupWikiPage(project, page) {
-  const projectDir = outputDir+project.identifier
-  initDirectory(projectDir);
-  const sanitizedTitle = this.sanitizeFileName(page.title);
-  fs.writeFileSync(projectDir+'/'+sanitizedTitle+'.'+config.extension, page.text);
-  if (page.attachments) {
-    const attachmentDir = projectDir+'/attachments';
-    initDirectory(attachmentDir);
-    page.attachments.forEach(attachment => {
-      redmine.getAttachment(attachment, (content) => {
-        fs.writeFileSync(attachmentDir+'/'+attachment.filename, content, 'binary');
+class Redmine {
+  // ... existing methods ...
+
+  backupWikiPage(project, page) {
+    const projectDir = outputDir + project.identifier;
+    initDirectory(projectDir);
+    const sanitizedTitle = this.sanitizeFileName(page.title);
+    fs.writeFileSync(projectDir + '/' + sanitizedTitle + '.' + this.extension, page.text);
+    if (page.attachments) {
+      const attachmentDir = projectDir + '/attachments';
+      initDirectory(attachmentDir);
+      page.attachments.forEach(attachment => {
+        this.getAttachment(attachment, (content) => {
+          fs.writeFileSync(attachmentDir + '/' + attachment.filename, content, 'binary');
+        });
       });
-    });
+    }
   }
 }
 
