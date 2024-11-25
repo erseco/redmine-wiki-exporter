@@ -29,7 +29,7 @@ app.get('/', (req, res) => {
 
 app.get('/:file', (req, res) => {
   const fileName = req.params.file;
-  const filePath = path.join(textileDir, fileName + '.textile');
+  const filePath = path.join(textileDir, fileName);
 
   if (fs.existsSync(filePath)) {
     const textileContent = fs.readFileSync(filePath, 'utf8');
