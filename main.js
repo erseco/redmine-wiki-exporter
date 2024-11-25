@@ -23,13 +23,11 @@ class Redmine {
     const redmineUrl = this.redmineUrl;
     const user = this.user;
     const password = this.password;
-    const req = {};
-    req.url = this.redmineUrl + requestPath;
-    if (this.user && this.password) {
-      req.auth = {};
-      req.auth.user = this.user;
-      req.auth.password = this.password;
-    }
+    const req = {
+      url: this.redmineUrl + requestPath,
+      timeout: 30000, // 30 segundos
+      auth: this.user ? { user: this.user, password: this.password } : undefined
+    };
     return req;
   }
 
@@ -82,19 +80,20 @@ class Redmine {
     let path = '/projects/'+project.identifier+'/wiki/'+encodeURIComponent(pageName)+'.json';
     path += '?include=attachments';
     console.log("requesting "+path+"...");
-    request(this.newRequest(path), function(error, response, body) {
-      if (error) {
-        console.log(error);
-      }else if (body) {
-          let page = null;
-          try {
-            page = JSON.parse(body).wiki_page;
-          } catch (e) {
-            console.log("["+project.identifier+"]["+pageName+"] Cannot parse JSON string: "+body);
-          }
-          callback(page);
-      }
-    });
+request(this.newRequest(path), function(error, response, body) {
+  if (error) {
+    console.error("Request error:", error.message);
+  } else if (response.statusCode !== 200) {
+    console.error(`HTTP Error: ${response.statusCode} - ${response.statusMessage}`);
+  } else {
+    try {
+      const page = JSON.parse(body).wiki_page;
+      callback(page);
+    } catch (e) {
+      console.error("JSON Parsing Error:", e.message);
+    }
+  }
+});
   }
 
   getAttachment(attachment, callback) {
