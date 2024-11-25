@@ -20,6 +20,19 @@ class Redmine {
     this.excludedProjects = config.excludedProjects || [];
   }
 
+  generateStaticSite(project, page) {
+    const sanitizedTitle = this.sanitizeFileName(page.title);
+    const projectDir = outputDir + project.identifier;
+    const htmlDir = projectDir + '/html';
+    initDirectory(htmlDir);
+
+    const htmlContent = textile(page.text);
+    const htmlFilePath = `${htmlDir}/${sanitizedTitle}.html`;
+
+    fs.writeFileSync(htmlFilePath, htmlContent);
+    console.log(`Generated HTML for ${page.title} at ${htmlFilePath}`);
+  }
+
   backupWikiPage(project, page) {
     const projectDir = outputDir + project.identifier;
     initDirectory(projectDir);
@@ -212,7 +225,7 @@ redmine.getProjects(projects => {
               redmine.backupWikiPage(project, fullPage);
 
               // Generate static HTML site from Textile files
-              generateStaticSite(project, fullPage);
+              redmine.generateStaticSite(project, fullPage);
             }
           });
         });
