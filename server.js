@@ -4,7 +4,8 @@ const path = require('path');
 const textile = require('textile-js');
 
 const app = express();
-const textileDir = './textile_files'; 
+const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+const textileDir = config.outputDir;
 
 app.get('/:file', (req, res) => {
   const fileName = req.params.file;
