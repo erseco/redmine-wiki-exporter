@@ -1,2 +1,6 @@
 .idea/
 node_modules/
+.aider*
+.env
+config.json
+output/
