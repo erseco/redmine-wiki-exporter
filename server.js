@@ -39,7 +39,10 @@ app.get('/:project/:file?', (req, res) => {
 
   if (fs.existsSync(filePath)) {
     const textileContent = fs.readFileSync(filePath, 'utf8');
-    const htmlContent = textile(textileContent);
+    const htmlContent = textile(textileContent).replace(/\[\[([^\|\]]+)\|([^\]]+)\]\]/g, (match, fileName, linkText) => {
+      const sanitizedFileName = fileName.replace(/ /g, '_');
+      return `<a href="/${req.params.project}/${sanitizedFileName}">${linkText}</a>`;
+    });
     res.send(`
       <!DOCTYPE html>
       <html>
@@ -51,6 +54,8 @@ app.get('/:project/:file?', (req, res) => {
     res.status(404).send('File not found');
   }
 });
+
+app.use('/attachments', express.static(path.join(textileDir, 'attachments')));
 
 const PORT = 3000;
 app.listen(PORT, () => {
