@@ -3,7 +3,7 @@ A simple script to export all wiki pages and their attachments of a Redmine serv
 
 ## Requirements:
 
-* NodeJS version 6.9 or higher
+* Node version 22 or higher
 
 ## Getting started
 
@@ -14,6 +14,10 @@ npm install
 ```
 
 Create a ```config.json``` file, containing the following properties:
+
+```
+cp config.json.dist config.json
+```
 
 * ```redmineUrl``` _(required)_: the url of the Redmine server ;
 * ```user```: the username used to authenticate through the Redmine REST API ;
