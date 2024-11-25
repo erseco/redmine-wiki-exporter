@@ -193,7 +193,7 @@ redmine.getProjects(projects => {
           redmine.getWikiPage(project, page.title, (fullPage) => {
             if (fullPage) {
               // Store the wiki page content and its attachments into the output directory
-              backupWikiPage(project, fullPage);
+              this.backupWikiPage(project, fullPage);
 
               // Generate static HTML site from Textile files
               generateStaticSite(project, fullPage);
@@ -215,7 +215,7 @@ function readConfiguration() {
   return config;
 }
 
-function backupWikiPage(project, page) {
+backupWikiPage(project, page) {
   const projectDir = outputDir+project.identifier
   initDirectory(projectDir);
   const sanitizedTitle = this.sanitizeFileName(page.title);
