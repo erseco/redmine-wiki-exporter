@@ -1,6 +1,6 @@
 
 const fs = require('fs');
-const request = require('request');
+const axios = require('axios');
 
 const NB_PROJECTS_PER_PAGE = 25;
 const CONFIG_FILE = 'config.json';
@@ -23,12 +23,9 @@ class Redmine {
     const redmineUrl = this.redmineUrl;
     const user = this.user;
     const password = this.password;
-    const req = {
-      url: this.redmineUrl + requestPath,
-      timeout: 30000, // 30 segundos
-      auth: this.user ? { user: this.user, password: this.password } : undefined
-    };
-    return req;
+    const url = this.redmineUrl + requestPath;
+    const auth = this.user ? { username: this.user, password: this.password } : undefined;
+    return { url, auth };
   }
 
   getProjects(callback) {
@@ -50,63 +47,51 @@ class Redmine {
   getProjectListPage(page, callback) {
     const offset = page * NB_PROJECTS_PER_PAGE;
     console.log("requesting projects list (page="+page+")...");
-    request(this.newRequest('/projects.json?offset='+offset), function(error, response, body) {
-      if (error) {
-        console.log(error);
-      }else if(body){
-        let projects = JSON.parse(body).projects;
+    axios.get(this.newRequest('/projects.json?offset=' + offset).url, { auth: this.newRequest('').auth })
+      .then(response => {
+        const projects = response.data.projects;
         callback(projects);
-      }
-    });
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   getWikiPages(project, callback) {
-    request(this.newRequest('/projects/'+project.identifier+'/wiki/index.json'), function(error, response, body) {
-      if (error) {
-        console.log(error);
-      }else if (body) {
-          let pages = []
-          try {
-            pages = JSON.parse(body).wiki_pages;
-          } catch (e) {
-            console.log("["+project.identifier+"]Cannot parse JSON string: "+body);
-          }
-          callback(pages);
-      }
-    });
+    axios.get(this.newRequest('/projects/' + project.identifier + '/wiki/index.json').url, { auth: this.newRequest('').auth })
+      .then(response => {
+        const pages = response.data.wiki_pages;
+        callback(pages);
+      })
+      .catch(error => {
+        console.log("[" + project.identifier + "] Cannot parse JSON string: " + error.message);
+      });
   }
 
   getWikiPage(project, pageName, callback) {
     let path = '/projects/'+project.identifier+'/wiki/'+encodeURIComponent(pageName)+'.json';
     path += '?include=attachments';
     console.log("requesting "+path+"...");
-request(this.newRequest(path), function(error, response, body) {
-  if (error) {
-    console.error("Request error:", error.message);
-  } else if (response.statusCode !== 200) {
-    console.error(`HTTP Error: ${response.statusCode} - ${response.statusMessage}`);
-  } else {
-    try {
-      const page = JSON.parse(body).wiki_page;
-      callback(page);
-    } catch (e) {
-      console.error("JSON Parsing Error:", e.message);
-    }
-  }
-});
+    axios.get(this.newRequest(path).url, { auth: this.newRequest('').auth })
+      .then(response => {
+        const page = response.data.wiki_page;
+        callback(page);
+      })
+      .catch(error => {
+        console.error("Request error:", error.message);
+      });
   }
 
   getAttachment(attachment, callback) {
     if (attachment && attachment.id) {
-      let req = this.newRequest('/attachments/download/'+attachment.id);
-      req.encoding = 'binary';
-      request(req, function(error, response, body) {
-        if (error) {
+      const req = this.newRequest('/attachments/download/' + attachment.id);
+      axios.get(req.url, { responseType: 'arraybuffer', auth: req.auth })
+        .then(response => {
+          callback(response.data);
+        })
+        .catch(error => {
           console.log(error);
-        }else if (body) {
-          callback(body);
-        }
-      });
+        });
     }
   }
 
