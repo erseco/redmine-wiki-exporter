@@ -20,6 +20,22 @@ class Redmine {
     this.excludedProjects = config.excludedProjects || [];
   }
 
+  backupWikiPage(project, page) {
+    const projectDir = outputDir + project.identifier;
+    initDirectory(projectDir);
+    const sanitizedTitle = this.sanitizeFileName(page.title);
+    fs.writeFileSync(projectDir + '/' + sanitizedTitle + '.' + this.extension, page.text);
+    if (page.attachments) {
+      const attachmentDir = projectDir + '/attachments';
+      initDirectory(attachmentDir);
+      page.attachments.forEach(attachment => {
+        this.getAttachment(attachment, (content) => {
+          fs.writeFileSync(attachmentDir + '/' + attachment.filename, content, 'binary');
+        });
+      });
+    }
+  }
+
   sanitizeFileName(name) {
     return name.replace(/[<>:"/\\|?*]+/g, '_');
   }
