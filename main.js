@@ -47,7 +47,10 @@ class Redmine {
   getProjectListPage(page, callback) {
     const offset = page * NB_PROJECTS_PER_PAGE;
     console.log("requesting projects list (page="+page+")...");
-    axios.get(this.newRequest('/projects.json?offset=' + offset).url, { auth: this.newRequest('').auth })
+    axios.get(this.newRequest('/projects.json?offset=' + offset).url, { 
+      auth: this.newRequest('').auth,
+      timeout: 10000 // 10 seconds timeout
+    })
       .then(response => {
         const projects = response.data.projects;
         callback(projects);
@@ -58,7 +61,10 @@ class Redmine {
   }
 
   getWikiPages(project, callback) {
-    axios.get(this.newRequest('/projects/' + project.identifier + '/wiki/index.json').url, { auth: this.newRequest('').auth })
+    axios.get(this.newRequest('/projects/' + project.identifier + '/wiki/index.json').url, { 
+      auth: this.newRequest('').auth,
+      timeout: 10000 // 10 seconds timeout
+    })
       .then(response => {
         const pages = response.data.wiki_pages;
         callback(pages);
@@ -72,7 +78,10 @@ class Redmine {
     let path = '/projects/'+project.identifier+'/wiki/'+encodeURIComponent(pageName)+'.json';
     path += '?include=attachments';
     console.log("requesting "+path+"...");
-    axios.get(this.newRequest(path).url, { auth: this.newRequest('').auth })
+    axios.get(this.newRequest(path).url, { 
+      auth: this.newRequest('').auth,
+      timeout: 10000 // 10 seconds timeout
+    })
       .then(response => {
         const page = response.data.wiki_page;
         callback(page);
@@ -85,7 +94,11 @@ class Redmine {
   getAttachment(attachment, callback) {
     if (attachment && attachment.id) {
       const req = this.newRequest('/attachments/download/' + attachment.id);
-      axios.get(req.url, { responseType: 'arraybuffer', auth: req.auth })
+      axios.get(req.url, { 
+        responseType: 'arraybuffer', 
+        auth: req.auth,
+        timeout: 10000 // 10 seconds timeout
+      })
         .then(response => {
           callback(response.data);
         })
