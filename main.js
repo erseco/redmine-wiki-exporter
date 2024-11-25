@@ -1,6 +1,7 @@
 
 const fs = require('fs');
 const axios = require('axios');
+const textile = require('textile-js');
 
 const NB_PROJECTS_PER_PAGE = 25;
 const CONFIG_FILE = 'config.json';
@@ -17,6 +18,18 @@ class Redmine {
     this.password = config.password;
     this.extension = config.extension || 'md';
     this.excludedProjects = config.excludedProjects || [];
+  }
+
+  generateStaticSite(project, page) {
+    const projectDir = outputDir + project.identifier;
+    const htmlDir = projectDir + '/html';
+    initDirectory(htmlDir);
+
+    const htmlContent = textile(page.text);
+    const htmlFilePath = `${htmlDir}/${page.title}.html`;
+
+    fs.writeFileSync(htmlFilePath, htmlContent);
+    console.log(`Generated HTML for ${page.title} at ${htmlFilePath}`);
   }
 
   newRequest(requestPath) {
@@ -174,8 +187,11 @@ redmine.getProjects(projects => {
           // Retrieve the wiki page's content
           redmine.getWikiPage(project, page.title, (fullPage) => {
             if (fullPage) {
-                // Store the wiki page content and its attachments into the output directory
-                backupWikiPage(project, fullPage);
+              // Store the wiki page content and its attachments into the output directory
+              backupWikiPage(project, fullPage);
+
+              // Generate static HTML site from Textile files
+              generateStaticSite(project, fullPage);
             }
           });
         });
