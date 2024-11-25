@@ -27,9 +27,15 @@ app.get('/', (req, res) => {
   });
 });
 
-app.get('/:file', (req, res) => {
-  const fileName = req.params.file;
-  const filePath = path.join(textileDir, fileName + '.textile');
+app.get('/:project/:file?', (req, res) => {
+  const projectDir = path.join(textileDir, req.params.project);
+  let filePath;
+
+  if (req.params.file) {
+    filePath = path.join(projectDir, req.params.file + '.textile');
+  } else {
+    filePath = path.join(projectDir, 'Wiki.textile');
+  }
 
   if (fs.existsSync(filePath)) {
     const textileContent = fs.readFileSync(filePath, 'utf8');
@@ -37,7 +43,7 @@ app.get('/:file', (req, res) => {
     res.send(`
       <!DOCTYPE html>
       <html>
-      <head><title>${fileName}</title></head>
+      <head><title>${req.params.project}</title></head>
       <body>${htmlContent}</body>
       </html>
     `);
