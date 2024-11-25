@@ -49,7 +49,11 @@ class Redmine {
     console.log("requesting projects list (page="+page+")...");
     axios.get(this.newRequest('/projects.json?offset=' + offset).url, { 
       auth: this.newRequest('').auth,
-      timeout: 10000 // 10 seconds timeout
+      timeout: 10000, // 10 seconds timeout
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+        'Cookie': 'your_cookie_here'
+      }
     })
       .then(response => {
         const projects = response.data.projects;
@@ -63,7 +67,11 @@ class Redmine {
   getWikiPages(project, callback) {
     axios.get(this.newRequest('/projects/' + project.identifier + '/wiki/index.json').url, { 
       auth: this.newRequest('').auth,
-      timeout: 10000 // 10 seconds timeout
+      timeout: 10000, // 10 seconds timeout
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+        'Cookie': 'your_cookie_here'
+      }
     })
       .then(response => {
         const pages = response.data.wiki_pages;
@@ -80,7 +88,11 @@ class Redmine {
     console.log("requesting "+path+"...");
     axios.get(this.newRequest(path).url, { 
       auth: this.newRequest('').auth,
-      timeout: 10000 // 10 seconds timeout
+      timeout: 10000, // 10 seconds timeout
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+        'Cookie': 'your_cookie_here'
+      }
     })
       .then(response => {
         const page = response.data.wiki_page;
@@ -97,7 +109,11 @@ class Redmine {
       axios.get(req.url, { 
         responseType: 'arraybuffer', 
         auth: req.auth,
-        timeout: 10000 // 10 seconds timeout
+        timeout: 10000, // 10 seconds timeout
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+          'Cookie': 'your_cookie_here'
+        }
       })
         .then(response => {
           callback(response.data);
